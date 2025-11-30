@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Administração{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-clipboard-list me-2"></i>{{ title }}
+        </h1>
+        <a href="{{ url_for('admin.quizzes') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título do Simulado *</label>
+                            {{ form.title(class="form-control", placeholder="Ex: Simulado de Anatomia - Módulo 1") }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small mt-1">{{ form.title.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="module_id" class="form-label">Módulo *</label>
+                            {{ form.module_id(class="form-select") }}
+                            {% if form.module_id.errors %}
+                                <div class="text-danger small mt-1">{{ form.module_id.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descrição</label>
+                            {{ form.description(class="form-control", rows=3, placeholder="Descrição opcional do simulado") }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="time_limit_minutes" class="form-label">Tempo Limite (minutos) *</label>
+                                {{ form.time_limit_minutes(class="form-control", placeholder="60") }}
+                                {% if form.time_limit_minutes.errors %}
+                                    <div class="text-danger small mt-1">{{ form.time_limit_minutes.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="order" class="form-label">Ordem de Exibição</label>
+                                {{ form.order(class="form-control", placeholder="0") }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if quiz %}
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-list-ol me-2"></i>Questões ({{ quiz.questions.count() }})</span>
+                    <a href="{{ url_for('admin.quiz_questions', id=quiz.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-cog me-1"></i>Gerenciar Questões
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

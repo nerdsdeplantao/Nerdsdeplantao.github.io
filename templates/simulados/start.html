@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }} - Simulados{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('simulados.index') }}">Simulados</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('simulados.discipline', id=quiz.module.discipline.id) }}">{{ quiz.module.discipline.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('simulados.module', id=quiz.module.id) }}">{{ quiz.module.name }}</a></li>
+            <li class="breadcrumb-item active">{{ quiz.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-clipboard-list fa-4x text-primary mb-4"></i>
+                    <h2 class="card-title">{{ quiz.title }}</h2>
+                    {% if quiz.description %}
+                    <p class="card-text text-muted">{{ quiz.description }}</p>
+                    {% endif %}
+                    
+                    <div class="row justify-content-center my-4">
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-primary text-white me-3">
+                                    <i class="fas fa-question"></i>
+                                </div>
+                                <div class="text-start">
+                                    <small class="text-muted">Questões</small>
+                                    <h5 class="mb-0">{{ questions_count }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-warning text-white me-3">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="text-start">
+                                    <small class="text-muted">Tempo Limite</small>
+                                    <h5 class="mb-0">{{ quiz.time_limit_minutes }} min</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Após iniciar o simulado, você terá <strong>{{ quiz.time_limit_minutes }} minutos</strong> para responder todas as questões. O cronômetro não pode ser pausado.
+                    </div>
+
+                    <a href="{{ url_for('simulados.take', id=quiz.id) }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-play me-2"></i>Iniciar Simulado
+                    </a>
+                </div>
+            </div>
+
+            {% if previous_attempts %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <i class="fas fa-history me-2"></i>Tentativas Anteriores
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Acertos</th>
+                                <th>Nota</th>
+                                <th>Tempo</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attempt in previous_attempts %}
+                            <tr>
+                                <td>{{ attempt.finished_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>{{ attempt.correct_answers }}/{{ attempt.total_questions }}</td>
+                                <td>
+                                    <span class="badge {% if attempt.score >= 70 %}bg-success{% elif attempt.score >= 50 %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ "%.1f"|format(attempt.score) }}%
+                                    </span>
+                                </td>
+                                <td>{{ (attempt.time_spent_seconds // 60) }}:{{ "%02d"|format(attempt.time_spent_seconds % 60) }}</td>
+                                <td>
+                                    <a href="{{ url_for('simulados.result', attempt_id=attempt.id) }}" class="btn btn-sm btn-outline-primary">
+                                        Ver Detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}{{ video.title }} - Nerds de Plantão{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('videos.index') }}">Videoaulas</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('videos.discipline', id=video.module.discipline.id) }}">{{ video.module.discipline.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('videos.module', id=video.module.id) }}">{{ video.module.name }}</a></li>
+            <li class="breadcrumb-item active">{{ video.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card mb-4">
+                <div class="video-container">
+                    <iframe src="{{ embed_url }}" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="card-title">{{ video.title }}</h4>
+                            {% if video.description %}
+                            <p class="card-text text-muted">{{ video.description }}</p>
+                            {% endif %}
+                        </div>
+                        <form method="POST" action="{{ url_for('videos.mark_complete', id=video.id) }}" class="mark-complete-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn {% if is_completed %}btn-success{% else %}btn-outline-success{% endif %}">
+                                <i class="fas fa-check me-2"></i>
+                                {% if is_completed %}Concluído{% else %}Marcar como Concluído{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                {% if prev_video %}
+                <a href="{{ url_for('videos.watch', id=prev_video.id) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Anterior
+                </a>
+                {% else %}
+                <span></span>
+                {% endif %}
+                
+                {% if next_video %}
+                <a href="{{ url_for('videos.watch', id=next_video.id) }}" class="btn btn-primary">
+                    Próxima<i class="fas fa-arrow-right ms-2"></i>
+                </a>
+                {% else %}
+                <a href="{{ url_for('videos.module', id=video.module.id) }}" class="btn btn-outline-secondary">
+                    Voltar ao Módulo
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-2"></i>Informações
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Disciplina:</span>
+                        <strong>{{ video.module.discipline.name }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Módulo:</span>
+                        <strong>{{ video.module.name }}</strong>
+                    </li>
+                    {% if video.duration_minutes %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Duração:</span>
+                        <strong>{{ video.duration_minutes }} min</strong>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Status:</span>
+                        {% if is_completed %}
+                        <span class="badge bg-success">Concluído</span>
+                        {% else %}
+                        <span class="badge bg-warning">Pendente</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+}
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+</style>
+{% endblock %}

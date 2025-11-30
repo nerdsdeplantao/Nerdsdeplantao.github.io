@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ material.title }} - Materiais{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('materiais.index') }}">Materiais</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('materiais.discipline', id=material.module.discipline.id) }}">{{ material.module.discipline.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('materiais.module', id=material.module.id) }}">{{ material.module.name }}</a></li>
+            <li class="breadcrumb-item active">{{ material.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-file-pdf me-2"></i>{{ material.title }}
+        </h1>
+        <a href="{{ url_for('materiais.download', id=material.id) }}" class="btn btn-success">
+            <i class="fas fa-download me-2"></i>Download
+        </a>
+    </div>
+
+    {% if material.description %}
+    <div class="alert alert-light mb-4">
+        {{ material.description }}
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body p-0">
+            <iframe src="{{ url_for('materiais.serve_file', filename=material.file_path) }}" 
+                    class="pdf-viewer" 
+                    style="width: 100%; height: 80vh; border: none;"></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ module.name }} - Materiais{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('materiais.index') }}">Materiais</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('materiais.discipline', id=module.discipline.id) }}">{{ module.discipline.name }}</a></li>
+            <li class="breadcrumb-item active">{{ module.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-folder me-2"></i>{{ module.name }}
+        </h1>
+    </div>
+
+    {% if materials %}
+    <div class="row">
+        {% for material in materials %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card content-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box {% if material.file_type == 'pdf' %}bg-danger{% else %}bg-info{% endif %} text-white me-3">
+                            {% if material.file_type == 'pdf' %}
+                            <i class="fas fa-file-pdf"></i>
+                            {% elif material.external_url %}
+                            <i class="fas fa-link"></i>
+                            {% else %}
+                            <i class="fas fa-file"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">{{ material.title }}</h5>
+                            <small class="text-muted">
+                                {% if material.file_type %}{{ material.file_type|upper }}{% else %}Link{% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% if material.description %}
+                    <p class="card-text text-muted small">{{ material.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100">
+                        <a href="{{ url_for('materiais.view', id=material.id) }}" class="btn btn-success" target="_blank">
+                            <i class="fas fa-eye me-1"></i>Visualizar
+                        </a>
+                        {% if material.file_path %}
+                        <a href="{{ url_for('materiais.download', id=material.id) }}" class="btn btn-outline-success">
+                            <i class="fas fa-download me-1"></i>Download
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Nenhum material disponível neste módulo ainda.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

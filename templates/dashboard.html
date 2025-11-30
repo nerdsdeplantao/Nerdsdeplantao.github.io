@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Nerds de Plantão{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </h1>
+        <span class="text-muted">Bem-vindo, {{ current_user.username }}!</span>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Videoaulas</h6>
+                            <h2 class="card-title mb-0">{{ total_videos }}</h2>
+                        </div>
+                        <i class="fas fa-video stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-secondary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Simulados</h6>
+                            <h2 class="card-title mb-0">{{ total_quizzes }}</h2>
+                        </div>
+                        <i class="fas fa-clipboard-list stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Materiais</h6>
+                            <h2 class="card-title mb-0">{{ total_materials }}</h2>
+                        </div>
+                        <i class="fas fa-book stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Seu Progresso</h6>
+                            <h2 class="card-title mb-0">{{ progress }}%</h2>
+                        </div>
+                        <i class="fas fa-chart-line stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-chart-pie me-2 text-success"></i>Seu Progresso Geral
+                    </h5>
+                    <div class="progress progress-lg mb-2">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%">
+                            {{ progress }}%
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Aulas concluídas</span>
+                        <span>Média nos simulados: {{ "%.1f"|format(avg_score) }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-video me-2"></i>Últimas Videoaulas
+                </div>
+                <div class="card-body">
+                    {% if recent_videos %}
+                        <ul class="list-group list-group-flush">
+                            {% for video in recent_videos %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <a href="{{ url_for('videos.watch', id=video.id) }}" class="text-decoration-none">
+                                        {{ video.title }}
+                                    </a>
+                                    <small class="d-block text-muted">{{ video.module.name }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">
+                                    {% if video.duration_minutes %}{{ video.duration_minutes }} min{% endif %}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">Nenhuma videoaula disponível ainda.</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('videos.index') }}" class="btn btn-sm btn-outline-primary w-100">
+                        Ver todas as videoaulas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-clipboard-list me-2"></i>Últimos Simulados
+                </div>
+                <div class="card-body">
+                    {% if recent_quizzes %}
+                        <ul class="list-group list-group-flush">
+                            {% for quiz in recent_quizzes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <a href="{{ url_for('simulados.start', id=quiz.id) }}" class="text-decoration-none">
+                                        {{ quiz.title }}
+                                    </a>
+                                    <small class="d-block text-muted">{{ quiz.module.name }}</small>
+                                </div>
+                                <span class="badge bg-secondary rounded-pill">
+                                    {{ quiz.time_limit_minutes }} min
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">Nenhum simulado disponível ainda.</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('simulados.index') }}" class="btn btn-sm btn-outline-secondary w-100">
+                        Ver todos os simulados
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-book me-2"></i>Últimos Materiais
+                </div>
+                <div class="card-body">
+                    {% if recent_materials %}
+                        <ul class="list-group list-group-flush">
+                            {% for material in recent_materials %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <a href="{{ url_for('materiais.view', id=material.id) }}" class="text-decoration-none">
+                                        {{ material.title }}
+                                    </a>
+                                    <small class="d-block text-muted">{{ material.module.name }}</small>
+                                </div>
+                                <span class="badge bg-success rounded-pill">
+                                    {{ material.file_type|upper if material.file_type else 'LINK' }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">Nenhum material disponível ainda.</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('materiais.index') }}" class="btn btn-sm btn-outline-success w-100">
+                        Ver todos os materiais
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

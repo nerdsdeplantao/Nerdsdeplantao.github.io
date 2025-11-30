@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{{ discipline.name }} - Simulados{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('simulados.index') }}">Simulados</a></li>
+            <li class="breadcrumb-item active">{{ discipline.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-graduation-cap me-2"></i>{{ discipline.name }}
+        </h1>
+    </div>
+
+    {% if modules %}
+    <div class="row">
+        {% for module in modules %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card content-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box bg-secondary text-white me-3">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">{{ module.name }}</h5>
+                            <small class="text-muted">{{ module.quizzes.count() }} simulados</small>
+                        </div>
+                    </div>
+                    {% if module.description %}
+                    <p class="card-text text-muted small">{{ module.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('simulados.module', id=module.id) }}" class="btn btn-secondary w-100">
+                        <i class="fas fa-clipboard-list me-2"></i>Ver Simulados
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Nenhum módulo disponível nesta disciplina ainda.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

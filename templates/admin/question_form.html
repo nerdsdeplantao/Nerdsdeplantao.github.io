@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Administração{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin.index') }}">Administração</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('admin.quizzes') }}">Simulados</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('admin.quiz_questions', id=quiz.id) }}">{{ quiz.title }}</a></li>
+            <li class="breadcrumb-item active">{{ title }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-question-circle me-2"></i>{{ title }}
+        </h1>
+        <a href="{{ url_for('admin.quiz_questions', id=quiz.id) }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    <label for="text" class="form-label">Enunciado da Questão *</label>
+                    {{ form.text(class="form-control", rows=4, placeholder="Digite o enunciado da questão...") }}
+                    {% if form.text.errors %}
+                        <div class="text-danger small mt-1">{{ form.text.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="option_a" class="form-label">Alternativa A *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white">A</span>
+                            {{ form.option_a(class="form-control") }}
+                        </div>
+                        {% if form.option_a.errors %}
+                            <div class="text-danger small mt-1">{{ form.option_a.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="option_b" class="form-label">Alternativa B *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white">B</span>
+                            {{ form.option_b(class="form-control") }}
+                        </div>
+                        {% if form.option_b.errors %}
+                            <div class="text-danger small mt-1">{{ form.option_b.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="option_c" class="form-label">Alternativa C *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white">C</span>
+                            {{ form.option_c(class="form-control") }}
+                        </div>
+                        {% if form.option_c.errors %}
+                            <div class="text-danger small mt-1">{{ form.option_c.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="option_d" class="form-label">Alternativa D *</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white">D</span>
+                            {{ form.option_d(class="form-control") }}
+                        </div>
+                        {% if form.option_d.errors %}
+                            <div class="text-danger small mt-1">{{ form.option_d.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="option_e" class="form-label">Alternativa E (opcional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-secondary text-white">E</span>
+                            {{ form.option_e(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="correct_answer" class="form-label">Resposta Correta *</label>
+                        {{ form.correct_answer(class="form-select") }}
+                        {% if form.correct_answer.errors %}
+                            <div class="text-danger small mt-1">{{ form.correct_answer.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="explanation" class="form-label">Justificativa da Resposta</label>
+                    {{ form.explanation(class="form-control", rows=3, placeholder="Explique por que a resposta está correta...") }}
+                    <small class="text-muted">Esta justificativa será exibida ao aluno após a correção do simulado</small>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="order" class="form-label">Ordem de Exibição</label>
+                    {{ form.order(class="form-control", placeholder="0") }}
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Salvar Questão
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

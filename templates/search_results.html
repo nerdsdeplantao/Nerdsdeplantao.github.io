@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Busca: {{ query }} - Nerds de Plantão{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-search me-2"></i>Resultados da Busca
+        </h1>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form action="{{ url_for('main.search') }}" method="GET" class="d-flex">
+                <input type="text" name="q" value="{{ query }}" class="form-control me-2" placeholder="Buscar conteúdo...">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search me-1"></i>Buscar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if message %}
+        <div class="alert alert-info">{{ message }}</div>
+    {% elif results %}
+        {% if results.videos %}
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-video me-2"></i>Videoaulas ({{ results.videos|length }})
+            </div>
+            <div class="list-group list-group-flush">
+                {% for video in results.videos %}
+                <a href="{{ url_for('videos.watch', id=video.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ video.title }}</h6>
+                            <small class="text-muted">{{ video.module.discipline.name }} > {{ video.module.name }}</small>
+                        </div>
+                        <span class="badge bg-primary">Videoaula</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.quizzes %}
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <i class="fas fa-clipboard-list me-2"></i>Simulados ({{ results.quizzes|length }})
+            </div>
+            <div class="list-group list-group-flush">
+                {% for quiz in results.quizzes %}
+                <a href="{{ url_for('simulados.start', id=quiz.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ quiz.title }}</h6>
+                            <small class="text-muted">{{ quiz.module.discipline.name }} > {{ quiz.module.name }}</small>
+                        </div>
+                        <span class="badge bg-secondary">Simulado</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.materials %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-book me-2"></i>Materiais ({{ results.materials|length }})
+            </div>
+            <div class="list-group list-group-flush">
+                {% for material in results.materials %}
+                <a href="{{ url_for('materiais.view', id=material.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ material.title }}</h6>
+                            <small class="text-muted">{{ material.module.discipline.name }} > {{ material.module.name }}</small>
+                        </div>
+                        <span class="badge bg-success">Material</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.disciplines %}
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-graduation-cap me-2"></i>Disciplinas ({{ results.disciplines|length }})
+            </div>
+            <div class="list-group list-group-flush">
+                {% for discipline in results.disciplines %}
+                <a href="{{ url_for('videos.discipline', id=discipline.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ discipline.name }}</h6>
+                            <small class="text-muted">{{ discipline.description or 'Sem descrição' }}</small>
+                        </div>
+                        <span class="badge bg-info">Disciplina</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.modules %}
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-folder me-2"></i>Módulos ({{ results.modules|length }})
+            </div>
+            <div class="list-group list-group-flush">
+                {% for module in results.modules %}
+                <a href="{{ url_for('videos.module', id=module.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ module.name }}</h6>
+                            <small class="text-muted">{{ module.discipline.name }}</small>
+                        </div>
+                        <span class="badge bg-warning text-dark">Módulo</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not results.videos and not results.quizzes and not results.materials and not results.disciplines and not results.modules %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Nenhum resultado encontrado para "{{ query }}".
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

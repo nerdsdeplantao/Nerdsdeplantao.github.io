@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Administração{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-video me-2"></i>{{ title }}
+        </h1>
+        <a href="{{ url_for('admin.videos') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título da Videoaula *</label>
+                            {{ form.title(class="form-control", placeholder="Ex: Introdução ao Sistema Cardiovascular") }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small mt-1">{{ form.title.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="module_id" class="form-label">Módulo *</label>
+                            {{ form.module_id(class="form-select") }}
+                            {% if form.module_id.errors %}
+                                <div class="text-danger small mt-1">{{ form.module_id.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="video_url" class="form-label">URL do Vídeo *</label>
+                                {{ form.video_url(class="form-control", placeholder="https://www.youtube.com/watch?v=...") }}
+                                <small class="text-muted">Cole o link do YouTube ou Vimeo</small>
+                                {% if form.video_url.errors %}
+                                    <div class="text-danger small mt-1">{{ form.video_url.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="video_type" class="form-label">Plataforma *</label>
+                                {{ form.video_type(class="form-select") }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descrição</label>
+                            {{ form.description(class="form-control", rows=3, placeholder="Descrição opcional da videoaula") }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="duration_minutes" class="form-label">Duração (minutos)</label>
+                                {{ form.duration_minutes(class="form-control", placeholder="Ex: 30") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="order" class="form-label">Ordem de Exibição</label>
+                                {{ form.order(class="form-control", placeholder="0") }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

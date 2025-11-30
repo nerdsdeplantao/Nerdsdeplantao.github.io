@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Administração - Nerds de Plantão{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-cog me-2"></i>Painel Administrativo
+        </h1>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Total de Usuários</h6>
+                            <h2 class="card-title mb-0">{{ total_users }}</h2>
+                        </div>
+                        <i class="fas fa-users stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Pendentes</h6>
+                            <h2 class="card-title mb-0">{{ pending_users }}</h2>
+                        </div>
+                        <i class="fas fa-user-clock stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-secondary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Videoaulas</h6>
+                            <h2 class="card-title mb-0">{{ total_videos }}</h2>
+                        </div>
+                        <i class="fas fa-video stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card stat-card stat-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle text-muted mb-1">Média Simulados</h6>
+                            <h2 class="card-title mb-0">{{ "%.1f"|format(avg_score) }}%</h2>
+                        </div>
+                        <i class="fas fa-chart-line stat-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="fas fa-th-large me-2"></i>Gestão de Conteúdo
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin.disciplines') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-graduation-cap me-2 text-primary"></i>Disciplinas</span>
+                        <i class="fas fa-chevron-right text-muted"></i>
+                    </a>
+                    <a href="{{ url_for('admin.modules') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-folder me-2 text-warning"></i>Módulos</span>
+                        <i class="fas fa-chevron-right text-muted"></i>
+                    </a>
+                    <a href="{{ url_for('admin.videos') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-video me-2 text-danger"></i>Videoaulas</span>
+                        <span class="badge bg-primary rounded-pill">{{ total_videos }}</span>
+                    </a>
+                    <a href="{{ url_for('admin.quizzes') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-clipboard-list me-2 text-info"></i>Simulados</span>
+                        <span class="badge bg-primary rounded-pill">{{ total_quizzes }}</span>
+                    </a>
+                    <a href="{{ url_for('admin.materials') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-book me-2 text-success"></i>Materiais</span>
+                        <span class="badge bg-primary rounded-pill">{{ total_materials }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-users me-2"></i>Gestão de Usuários</span>
+                    {% if pending_users > 0 %}
+                    <span class="badge bg-warning">{{ pending_users }} pendentes</span>
+                    {% endif %}
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin.users', filter='pending') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-user-clock me-2 text-warning"></i>Cadastros Pendentes</span>
+                        <span class="badge bg-warning rounded-pill">{{ pending_users }}</span>
+                    </a>
+                    <a href="{{ url_for('admin.users', filter='active') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-user-check me-2 text-success"></i>Usuários Ativos</span>
+                        <i class="fas fa-chevron-right text-muted"></i>
+                    </a>
+                    <a href="{{ url_for('admin.users', filter='all') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-users me-2 text-primary"></i>Todos os Usuários</span>
+                        <span class="badge bg-primary rounded-pill">{{ total_users }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if recent_users %}
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-user-plus me-2"></i>Últimos Cadastros
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Email</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in recent_users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            {% if not user.is_approved %}
+                            <span class="badge bg-warning">Pendente</span>
+                            {% elif not user.is_active %}
+                            <span class="badge bg-danger">Inativo</span>
+                            {% else %}
+                            <span class="badge bg-success">Ativo</span>
+                            {% endif %}
+                            {% if user.is_admin %}
+                            <span class="badge bg-primary">Admin</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not user.is_approved %}
+                            <form method="POST" action="{{ url_for('admin.approve_user', user_id=user.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-success" title="Aprovar">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin.reject_user', user_id=user.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Rejeitar">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

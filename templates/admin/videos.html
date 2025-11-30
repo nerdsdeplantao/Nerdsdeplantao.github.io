@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Videoaulas - Administração{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-video me-2"></i>Videoaulas
+        </h1>
+        <div>
+            <a href="{{ url_for('admin.new_video') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nova Videoaula
+            </a>
+            <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+    </div>
+
+    {% if videos %}
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Título</th>
+                        <th>Módulo</th>
+                        <th>Duração</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for video in videos %}
+                    <tr>
+                        <td>{{ video.order }}</td>
+                        <td><strong>{{ video.title }}</strong></td>
+                        <td>
+                            <small class="text-muted">{{ video.module.discipline.name }}</small><br>
+                            <span class="badge bg-secondary">{{ video.module.name }}</span>
+                        </td>
+                        <td>{% if video.duration_minutes %}{{ video.duration_minutes }} min{% else %}-{% endif %}</td>
+                        <td><span class="badge bg-info">{{ video.video_type|upper }}</span></td>
+                        <td>
+                            <a href="{{ url_for('videos.watch', id=video.id) }}" class="btn btn-sm btn-outline-success" title="Visualizar" target="_blank">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin.edit_video', id=video.id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('admin.delete_video', id=video.id) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta videoaula?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Nenhuma videoaula cadastrada. <a href="{{ url_for('admin.new_video') }}">Criar a primeira videoaula</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

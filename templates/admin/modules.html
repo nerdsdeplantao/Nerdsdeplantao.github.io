@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Módulos - Administração{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-folder me-2"></i>Módulos
+        </h1>
+        <div>
+            <a href="{{ url_for('admin.new_module') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Novo Módulo
+            </a>
+            <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+    </div>
+
+    {% if modules %}
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Nome</th>
+                        <th>Disciplina</th>
+                        <th>Conteúdos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in modules %}
+                    <tr>
+                        <td>{{ module.order }}</td>
+                        <td><strong>{{ module.name }}</strong></td>
+                        <td><span class="badge bg-primary">{{ module.discipline.name }}</span></td>
+                        <td>
+                            <span class="badge bg-secondary" title="Videoaulas"><i class="fas fa-video"></i> {{ module.videos.count() }}</span>
+                            <span class="badge bg-info" title="Simulados"><i class="fas fa-clipboard-list"></i> {{ module.quizzes.count() }}</span>
+                            <span class="badge bg-success" title="Materiais"><i class="fas fa-book"></i> {{ module.materials.count() }}</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_module', id=module.id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('admin.delete_module', id=module.id) }}" class="d-inline" onsubmit="return confirm('Tem certeza? Todos os conteúdos deste módulo serão excluídos!')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Nenhum módulo cadastrado. <a href="{{ url_for('admin.new_module') }}">Criar o primeiro módulo</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

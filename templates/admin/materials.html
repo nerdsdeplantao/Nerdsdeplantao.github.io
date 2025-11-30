@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Materiais - Administração{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-book me-2"></i>Materiais Complementares
+        </h1>
+        <div>
+            <a href="{{ url_for('admin.new_material') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Novo Material
+            </a>
+            <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+    </div>
+
+    {% if materials %}
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Título</th>
+                        <th>Módulo</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for material in materials %}
+                    <tr>
+                        <td>{{ material.order }}</td>
+                        <td><strong>{{ material.title }}</strong></td>
+                        <td>
+                            <small class="text-muted">{{ material.module.discipline.name }}</small><br>
+                            <span class="badge bg-secondary">{{ material.module.name }}</span>
+                        </td>
+                        <td>
+                            {% if material.file_type %}
+                            <span class="badge bg-success">{{ material.file_type|upper }}</span>
+                            {% elif material.external_url %}
+                            <span class="badge bg-info">LINK</span>
+                            {% else %}
+                            <span class="badge bg-secondary">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('materiais.view', id=material.id) }}" class="btn btn-sm btn-outline-success" title="Visualizar" target="_blank">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin.edit_material', id=material.id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('admin.delete_material', id=material.id) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este material?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Nenhum material cadastrado. <a href="{{ url_for('admin.new_material') }}">Criar o primeiro material</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

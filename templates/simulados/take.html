@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }} - Simulado em Andamento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="quiz-header sticky-top bg-white py-3 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">{{ quiz.title }}</h4>
+            <div class="d-flex align-items-center">
+                <div class="timer-box me-3">
+                    <i class="fas fa-clock me-2"></i>
+                    <span id="timer" class="fw-bold">{{ quiz.time_limit_minutes }}:00</span>
+                </div>
+                <span class="badge bg-primary">
+                    <span id="answered">0</span>/{{ questions|length }} respondidas
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <form id="quizForm" method="POST" action="{{ url_for('simulados.submit', attempt_id=attempt.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="time_spent" id="time_spent" value="0">
+        
+        {% for question in questions %}
+        <div class="card mb-4 question-card" data-question="{{ question.id }}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Questão {{ loop.index }}</span>
+                <span class="question-status badge bg-secondary">Não respondida</span>
+            </div>
+            <div class="card-body">
+                <p class="question-text mb-4">{{ question.text }}</p>
+                
+                <div class="options-list">
+                    <div class="form-check option-item mb-2">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_a" value="A">
+                        <label class="form-check-label" for="q{{ question.id }}_a">
+                            <span class="option-letter">A</span> {{ question.option_a }}
+                        </label>
+                    </div>
+                    <div class="form-check option-item mb-2">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_b" value="B">
+                        <label class="form-check-label" for="q{{ question.id }}_b">
+                            <span class="option-letter">B</span> {{ question.option_b }}
+                        </label>
+                    </div>
+                    <div class="form-check option-item mb-2">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_c" value="C">
+                        <label class="form-check-label" for="q{{ question.id }}_c">
+                            <span class="option-letter">C</span> {{ question.option_c }}
+                        </label>
+                    </div>
+                    <div class="form-check option-item mb-2">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_d" value="D">
+                        <label class="form-check-label" for="q{{ question.id }}_d">
+                            <span class="option-letter">D</span> {{ question.option_d }}
+                        </label>
+                    </div>
+                    {% if question.option_e %}
+                    <div class="form-check option-item mb-2">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_e" value="E">
+                        <label class="form-check-label" for="q{{ question.id }}_e">
+                            <span class="option-letter">E</span> {{ question.option_e }}
+                        </label>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="text-center mb-5">
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="fas fa-check me-2"></i>Finalizar Simulado
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.quiz-header {
+    z-index: 1020;
+}
+.timer-box {
+    background: #f8f9fa;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+.option-item {
+    padding: 12px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.option-item:hover {
+    background: #f8f9fa;
+    border-color: #6c5ce7;
+}
+.option-item.selected {
+    background: #e8e5ff;
+    border-color: #6c5ce7;
+}
+.option-letter {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background: #6c5ce7;
+    color: white;
+    border-radius: 50%;
+    margin-right: 10px;
+    font-weight: bold;
+}
+.question-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let timeLimit = {{ quiz.time_limit_minutes }} * 60;
+    let timeSpent = 0;
+    const timerElement = document.getElementById('timer');
+    const timeSpentInput = document.getElementById('time_spent');
+    const answeredElement = document.getElementById('answered');
+    const form = document.getElementById('quizForm');
+    
+    const timer = setInterval(function() {
+        timeLimit--;
+        timeSpent++;
+        timeSpentInput.value = timeSpent;
+        
+        const minutes = Math.floor(timeLimit / 60);
+        const seconds = timeLimit % 60;
+        timerElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        
+        if (timeLimit <= 60) {
+            timerElement.classList.add('text-danger');
+        }
+        
+        if (timeLimit <= 0) {
+            clearInterval(timer);
+            alert('Tempo esgotado! O simulado será enviado automaticamente.');
+            form.submit();
+        }
+    }, 1000);
+    
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    radioButtons.forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const questionCard = this.closest('.question-card');
+            const statusBadge = questionCard.querySelector('.question-status');
+            statusBadge.textContent = 'Respondida';
+            statusBadge.classList.remove('bg-secondary');
+            statusBadge.classList.add('bg-success');
+            
+            const optionItems = questionCard.querySelectorAll('.option-item');
+            optionItems.forEach(item => item.classList.remove('selected'));
+            this.closest('.option-item').classList.add('selected');
+            
+            updateAnsweredCount();
+        });
+    });
+    
+    function updateAnsweredCount() {
+        const answered = document.querySelectorAll('.question-status.bg-success').length;
+        answeredElement.textContent = answered;
+    }
+    
+    form.addEventListener('submit', function(e) {
+        const unanswered = {{ questions|length }} - document.querySelectorAll('.question-status.bg-success').length;
+        if (unanswered > 0) {
+            if (!confirm('Você ainda tem ' + unanswered + ' questão(ões) não respondida(s). Deseja finalizar mesmo assim?')) {
+                e.preventDefault();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
